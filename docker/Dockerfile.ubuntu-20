@@ -1,0 +1,18 @@
+FROM ubuntu:20.04 as ubuntu-builder
+LABEL maintainer=falldog
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        g++ \
+        make \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./ /code/
+WORKDIR /code
+RUN make
+
+
+FROM ubuntu:20.04
+COPY --from=ubuntu-builder /code/dist/dcinja /app/
+WORKDIR /app
+ENTRYPOINT [ "/app/dcinja" ]
