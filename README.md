@@ -15,6 +15,13 @@ file at run-time.
 * [cxxopts](https://github.com/jarro2783/cxxopts)
 * [nlohmann/json](https://github.com/nlohmann/json)
 
+## Binary size
+os           | size  | embedded libstdc++ 
+-------------|:-----:|--------------------
+Ubuntu 20.04 | 553KB | Y
+Ubuntu 18.04 | 561KB | Y
+Alpine 3.9.4 | 541KB | N (libstdc++.so 1.3MB)
+
 ## Command line usage
 Reference repo docker example to build `dcinja` and copy to `/bin/` as system command in docker image.
 
