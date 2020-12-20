@@ -68,6 +68,36 @@ input template from file, output template to file
 $ dcinja -j '{"name": "Foo"}' -s input.template -d output.template
 ```
 
+## Integration
+Dockerfile example, using multi-stage to build `dcinja` and copy to your final docker image /bin/ as command
+
+```
+FROM ubuntu as dcinja-builder
+LABEL maintainer=falldog
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        \
+        # build
+        g++ \
+        make \
+        \
+        # clone source code
+        git \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /code \
+    && git clone https://github.com/Falldog/dcinja.git /code
+
+WORKDIR /code
+RUN make
+
+
+FROM ubuntu
+COPY --from=dcinja-builder /code/dist/dcinja /bin/
+# ...
+```
 
 
 ## Defect
