@@ -1,9 +1,9 @@
 NAME = dcinja
-INCLUDE = -I include
+INCLUDE = -I src/include
 CFLAGS = -Wall -Os
 CFLAGS_DEV = -Wall
 DIST_DIR = dist
-SRC_DIR = .
+SRC_DIR = src
 
 all:
 	mkdir -p ${DIST_DIR}

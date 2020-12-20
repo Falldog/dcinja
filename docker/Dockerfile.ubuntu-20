@@ -7,7 +7,8 @@ RUN apt-get update \
         make \
     && rm -rf /var/lib/apt/lists/*
 
-COPY ./ /code/
+COPY src/ /code/src/
+COPY Makefile /code/
 WORKDIR /code
 RUN make
 
