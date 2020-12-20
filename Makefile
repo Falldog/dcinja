@@ -2,19 +2,23 @@ NAME = dcinja
 INCLUDE = -I include
 CFLAGS = -Wall -Os
 CFLAGS_DEV = -Wall
-DIST_DIR= dist
+DIST_DIR = dist
+SRC_DIR = .
 
 all:
 	mkdir -p ${DIST_DIR}
-	g++ ${INCLUDE} ${CFLAGS} -o ${DIST_DIR}/${NAME} ${NAME}.cpp
+	g++ ${INCLUDE} ${CFLAGS} -o ${DIST_DIR}/${NAME} ${SRC_DIR}/${NAME}.cpp
 
 dev:
 	mkdir -p ${DIST_DIR}
-	g++ ${INCLUDE} ${CFLAGS_DEV} -o ${DIST_DIR}/${NAME} ${NAME}.cpp
+	g++ ${INCLUDE} ${CFLAGS_DEV} -o ${DIST_DIR}/${NAME} ${SRC_DIR}/${NAME}.cpp
 
 	echo "TEST Name: {{ name }}" | ./${DIST_DIR}/${NAME} -j '{"name": "Foo"}'
 
 build-docker:
-	docker build -t dcinja:alpine -f docker/Dockerfile.alpine .
+	docker build -t dcinja:alpine-3.12 -f docker/Dockerfile.alpine-3.12 .
+	docker build -t dcinja:alpine-3.9 -f docker/Dockerfile.alpine-3.9 .
 	docker build -t dcinja:ubuntu-20 -f docker/Dockerfile.ubuntu-20 .
 	docker build -t dcinja:ubuntu-18 -f docker/Dockerfile.ubuntu-18 .
+	docker build -t dcinja:debian-stretch -f docker/Dockerfile.debian-stretch .
+	docker build -t dcinja:debian-buster -f docker/Dockerfile.debian-buster .

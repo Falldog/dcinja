@@ -1,0 +1,18 @@
+FROM debian:buster as debian-builder
+LABEL maintainer=falldog
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        g++ \
+        make \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./ /code/
+WORKDIR /code
+RUN make
+
+
+FROM debian:buster
+COPY --from=debian-builder /code/dist/dcinja /app/
+WORKDIR /app
+ENTRYPOINT [ "/app/dcinja" ]
