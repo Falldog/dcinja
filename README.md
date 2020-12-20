@@ -20,7 +20,10 @@ os           | size  | embedded libstdc++
 -------------|:-----:|--------------------
 Ubuntu 20.04 | 553KB | Y
 Ubuntu 18.04 | 561KB | Y
-Alpine 3.9.4 | 541KB | N (libstdc++.so 1.3MB)
+Debian 10 (buster) | 548KB | Y
+Debian 9 (stretch) | 552KB | Y
+Alpine 3.12  | 526KB | N (libstdc++.so 1.6MB)
+Alpine 3.9   | 541KB | N (libstdc++.so 1.3MB)
 
 ## Command line usage
 Reference repo docker example to build `dcinja` and copy to `/bin/` as system command in docker image.
