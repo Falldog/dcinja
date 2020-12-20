@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iterator>
 #include <fstream>
+#include <unistd.h>
 
 #include <inja/inja.hpp>
 #include <cxxopts/cxxopts.hpp>
@@ -42,6 +43,7 @@ cxxopts::ParseResult parse(int argc, char* argv[]) {
             .allow_unrecognised_options()
             .add_options()
             ("h,help", "print help")
+            ("w,cwd", "change current working dir", cxxopts::value<std::string>())
             ("s,src", "source template file path", cxxopts::value<std::string>())
             ("d,dest", "dest template file path", cxxopts::value<std::string>())
             // ("e,defines", "define parameters, ex: `-e NAME=FOO -d VALUE=BAR`", cxxopts::value<std::vector<std::string>>())
@@ -68,6 +70,12 @@ int execute(cxxopts::ParseResult& result) {
     json data;
     std::string content;
 
+    // 0. change current working dir
+    if (result.count("cwd")) {
+        auto cwd = result["cwd"].as<std::string>();
+        chdir(cwd.c_str());
+    }
+
     // 1. prepare json data
     if (result.count("json")) {
         data = json::parse(result["json"].as<std::string>());
@@ -75,7 +83,7 @@ int execute(cxxopts::ParseResult& result) {
 
     // 2. read source content
     if (result.count("src")) {
-        std::string src = result["src"].as<std::string>();
+        auto src = result["src"].as<std::string>();
         read_source(src, content);
     } else {
         read_source("", content);
@@ -83,8 +91,8 @@ int execute(cxxopts::ParseResult& result) {
 
     // 3. render output
     if (result.count("dest")) {
+        auto dest = result["dest"].as<std::string>();
         std::ofstream ofs;
-        std::string dest = result["dest"].as<std::string>();
         ofs.open(dest, std::ofstream::out | std::ofstream::trunc);
         render_to(ofs, content, data);
         ofs.close();
