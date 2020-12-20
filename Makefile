@@ -16,6 +16,7 @@ dev:
 	echo "TEST Name: {{ name }}" | ./${DIST_DIR}/${NAME} -j '{"name": "Foo"}'
 
 build-docker:
+	docker build -t dcinja:dev -f docker/Dockerfile.dev .
 	docker build -t dcinja:alpine-3.12 -f docker/Dockerfile.alpine-3.12 .
 	docker build -t dcinja:alpine-3.9 -f docker/Dockerfile.alpine-3.9 .
 	docker build -t dcinja:ubuntu-20 -f docker/Dockerfile.ubuntu-20 .
