@@ -49,7 +49,7 @@ cxxopts::ParseResult parse(int argc, char* argv[]) {
             ("e,defines", "define string parameters, ex: `-e NAME=FOO -e NUM=1`", cxxopts::value<std::vector<std::string>>())
             ("j,json", "define json content, ex: `-j {\"NAME\": \"FOO\"}`", cxxopts::value<std::string>())
             ("f,json-file", "load json content from file", cxxopts::value<std::string>())
-            ("v,verbose", "verbose mode", cxxopts::value<bool>()->default_value("true"))
+            ("v,verbose", "verbose mode", cxxopts::value<bool>()->default_value("false"))
         ;
 
         auto result = options.parse(argc, argv);
@@ -101,6 +101,10 @@ int execute(cxxopts::ParseResult& result) {
             std::string value = defines[i].substr(idx+1);
             data[key] = value;
         }
+    }
+    if (result.count("verbose")) {
+        std::cerr << "<<< JSON content: >>>" << std::endl;
+        std::cerr << data.dump(4) << std::endl;
     }
 
     // 2. read source content
