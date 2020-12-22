@@ -74,7 +74,10 @@ int execute(cxxopts::ParseResult& result) {
     // 0. change current working dir
     if (result.count("cwd")) {
         auto cwd = result["cwd"].as<std::string>();
-        chdir(cwd.c_str());
+        if (chdir(cwd.c_str()) != 0) {
+            std::cout << "cwd fail, please make sure your dir path exists" << std::endl;
+            exit(1);
+        }
     }
 
     // 1. prepare json data & extra defines
