@@ -33,13 +33,14 @@ help description
 ```
   dcinja [OPTION...]
 
-  -h, --help      print help
-  -s, --src arg   source template file path
-  -d, --dest arg  dest template file path
-  -e, --defines arg  define string parameters, ex: `-e NAME=FOO -e NUM=1`
-  -j, --json arg  define json content, ex: `-j {'NAME': 'FOO'}`
+  -h, --help           print help
+  -w, --cwd arg        change current working dir
+  -s, --src arg        source template file path
+  -d, --dest arg       dest template file path
+  -e, --defines arg    define string parameters, ex: `-e NAME=FOO -e NUM=1`
+  -j, --json arg       define json content, ex: `-j {"NAME": "FOO"}`
   -f, --json-file arg  load json content from file
-  -v, --verbose   verbose mode (default: true)
+  -v, --verbose        verbose mode
 ```
 
 ## Template document
