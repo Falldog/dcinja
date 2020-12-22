@@ -38,6 +38,7 @@ help description
   -d, --dest arg  dest template file path
   -e, --defines arg  define string parameters, ex: `-e NAME=FOO -e NUM=1`
   -j, --json arg  define json content, ex: `-j {'NAME': 'FOO'}`
+  -f, --json-file arg  load json content from file
   -v, --verbose   verbose mode (default: true)
 ```
 
@@ -67,6 +68,25 @@ $ echo "TEST Name: {{ name }}" | dcinja -j '{"name": "Foo"}'
 input template from file, output template to file
 ```
 $ dcinja -j '{"name": "Foo"}' -s input.template -d output.template
+```
+
+input json from file
+```
+$ dcinja -f param.json -s input.template -d output.template
+```
+
+parameter context priority:
+`-e` >> `-j` >> `-f`
+1. `-f`: json file
+2. `-j`: json content defiend in command line
+3. `-e`: string parameter defeind in command line
+```
+$ cat name.json
+>>> {"name": "P1"}
+$ echo "Name: {{ name }}" | dcinja -f name.json
+>>> Name: P1
+$ echo "Name: {{ name }}" | dcinja -j '{"name": "P2"}' -e name=P3 -f name.json
+>>> Name: P3
 ```
 
 ## Integration
