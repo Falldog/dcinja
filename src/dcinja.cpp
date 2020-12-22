@@ -46,7 +46,7 @@ cxxopts::ParseResult parse(int argc, char* argv[]) {
             ("w,cwd", "change current working dir", cxxopts::value<std::string>())
             ("s,src", "source template file path", cxxopts::value<std::string>())
             ("d,dest", "dest template file path", cxxopts::value<std::string>())
-            // ("e,defines", "define parameters, ex: `-e NAME=FOO -d VALUE=BAR`", cxxopts::value<std::vector<std::string>>())
+            ("e,defines", "define string parameters, ex: `-e NAME=FOO -e NUM=1`", cxxopts::value<std::vector<std::string>>())
             ("j,json", "define json content, ex: `-j {\"NAME\": \"FOO\"}`", cxxopts::value<std::string>())
             ("v,verbose", "verbose mode", cxxopts::value<bool>()->default_value("true"))
         ;
@@ -76,9 +76,22 @@ int execute(cxxopts::ParseResult& result) {
         chdir(cwd.c_str());
     }
 
-    // 1. prepare json data
+    // 1. prepare json data & extra defines
     if (result.count("json")) {
         data = json::parse(result["json"].as<std::string>());
+    }
+    if (result.count("defines")) {
+        auto& defines = result["defines"].as<std::vector<std::string>>();
+        for (size_t i=0 ; i<defines.size() ; ++i) {
+            auto idx = defines[i].find_first_of("=");
+            if (idx == std::string::npos) {
+                std::cout << "error to parse define parameter, `" << defines[i] << "` is missing `=`" << std::endl;
+                exit(0);
+            }
+            std::string key = defines[i].substr(0, idx);
+            std::string value = defines[i].substr(idx+1);
+            data[key] = value;
+        }
     }
 
     // 2. read source content

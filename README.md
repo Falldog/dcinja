@@ -36,6 +36,7 @@ help description
   -h, --help      print help
   -s, --src arg   source template file path
   -d, --dest arg  dest template file path
+  -e, --defines arg  define string parameters, ex: `-e NAME=FOO -e NUM=1`
   -j, --json arg  define json content, ex: `-j {'NAME': 'FOO'}`
   -v, --verbose   verbose mode (default: true)
 ```
