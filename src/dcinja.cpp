@@ -21,6 +21,10 @@ bool read_source(std::string srcPath, std::string& content) {
         content.assign(it, end);
     } else {
         std::ifstream fs(srcPath);
+        if (!fs.good()) {
+            std::cout << "can't find the file: " << srcPath << std::endl;
+            exit(1);
+        }
         fs.seekg(0, std::ios::end);
         size_t size = fs.tellg();
         std::string buffer(size, ' ');
