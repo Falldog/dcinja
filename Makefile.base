@@ -1,0 +1,24 @@
+NAME = dcinja
+INCLUDE = -I src/include
+CFLAGS = -Wall -Os -std=c++11 
+CFLAGS_DEV = -Wall -std=c++11
+CLANG_FLAGS = -Wall -Os -std=c++11 -stdlib=libstdc++ -DCLANG_DEFAULT_LINKER='lld'
+DIST_DIR = dist
+SRC_DIR = src
+
+all: by-g++
+
+
+by-g++:
+	mkdir -p ${DIST_DIR}
+	g++ ${INCLUDE} ${CFLAGS} -o ${DIST_DIR}/${NAME} ${SRC_DIR}/${NAME}.cpp
+
+by-clang:
+	mkdir -p ${DIST_DIR}
+	clang++ ${INCLUDE} ${CLANG_FLAGS} -o ${DIST_DIR}/${NAME} ${SRC_DIR}/${NAME}.cpp
+
+dev:
+	mkdir -p ${DIST_DIR}
+	g++ ${INCLUDE} ${CFLAGS_DEV} -o ${DIST_DIR}/${NAME} ${SRC_DIR}/${NAME}.cpp
+
+	echo "TEST Name: {{ name }}" | ./${DIST_DIR}/${NAME} -j '{"name": "Foo"}'
