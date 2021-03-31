@@ -1,0 +1,18 @@
+FROM ubuntu:20.04 as dcinja-downloader
+
+RUN apt-get update \
+    && apt-get install -y \
+        wget \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /app \
+        && cd /app \
+        && wget https://github.com/Falldog/dcinja/releases/download/v1.1/dcinja-1.1.linux-amd64.tar.gz \
+        && tar xvzf dcinja-1.1.linux-amd64.tar.gz
+
+
+FROM ubuntu:20.04
+COPY --from=dcinja-downloader /app/dcinja /bin/
+
+RUN dcinja -h \
+        && echo "Normal: {{ name }}" | dcinja -j '{"name": "TEST"}'

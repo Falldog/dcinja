@@ -86,6 +86,27 @@ $ echo "Name: {{ name }}" | dcinja -j '{"name": "P2"}' -e name=P3 -f name.json
 >>> Name: P3
 ```
 
+## Integration from release build
+Dockerfile example, using multi-stage to download `dcinja` and copy to your final docker image /bin/ as command. The download path should follow Github release page to get latest release version.
+
+```
+FROM ubuntu:20.04 as dcinja-downloader
+RUN apt-get update && apt-get install -y wget
+RUN mkdir -p /app \
+        && cd /app \
+        && wget https://github.com/Falldog/dcinja/releases/download/v1.1/dcinja-1.1.linux-amd64.tar.gz \
+        && tar xvzf dcinja-1.1.linux-amd64.tar.gz
+
+FROM ubuntu:20.04
+COPY --from=dcinja-downloader /app/dcinja /bin/
+
+# testing, check dcinja working normal
+RUN dcinja -h \
+        && echo "Normal: {{ name }}" | dcinja -j '{"name": "TEST"}'
+
+# ...
+```
+
 ## Integration from source code
 Dockerfile example, using multi-stage to build `dcinja` and copy to your final docker image /bin/ as command
 
