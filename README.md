@@ -16,14 +16,10 @@ file at run-time.
 * [nlohmann/json](https://github.com/nlohmann/json)
 
 ## Binary size
-os           | dcinja size  | embedded libstdc++ 
--------------|:------------:|--------------------
-Ubuntu 20.04 | 597KB | Y
-Ubuntu 18.04 | 610KB | Y
-Debian 10 (buster) | 591KB | Y
-Debian 9 (stretch) | 601KB | Y
-Alpine 3.12 | 562KB | N (libstdc++.so 1.6MB)
-Alpine 3.9 | 585KB | N (libstdc++.so 1.3MB)
+arch | os      | dcinja size  | embedded libstdc++ 
+-----|:--------|:------------:|--------------------
+linux-amd64 | Ubuntu 16+, Debian stretch+ | 591KB | Y
+alpine | alpine 3.9+ | 586KB | N (libstdc++.so 1.3MB+)
 
 ## Command line usage
 Reference repo docker example to build `dcinja` and copy to `/bin/` as system command in docker image.
@@ -90,7 +86,7 @@ $ echo "Name: {{ name }}" | dcinja -j '{"name": "P2"}' -e name=P3 -f name.json
 >>> Name: P3
 ```
 
-## Integration
+## Integration from source code
 Dockerfile example, using multi-stage to build `dcinja` and copy to your final docker image /bin/ as command
 
 ```
@@ -142,7 +138,7 @@ Need to make sure your environment have the correct c++ runtime on
 apt-get update
 apt-get install libstdc++
 ```
-(Only support ubuntu 20.04, 18.04. Version before 16.04 default g++ is not support)
+(Only support ubuntu 16.04+)
 
 * Alpine
 ```
