@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as ubuntu-builder
+FROM debian:buster as linux-amd64-builder
 LABEL maintainer=falldog
 
 RUN apt-get update \
@@ -13,7 +13,7 @@ WORKDIR /code
 RUN make
 
 
-FROM ubuntu:20.04
-COPY --from=ubuntu-builder /code/dist/dcinja /app/
+FROM debian:buster
+COPY --from=linux-amd64-builder /code/dist/dcinja /app/
 WORKDIR /app
 ENTRYPOINT [ "/app/dcinja" ]

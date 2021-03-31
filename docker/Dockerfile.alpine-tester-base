@@ -1,0 +1,7 @@
+ARG VER=3.9
+FROM alpine:${VER}
+LABEL maintainer=falldog
+
+RUN apk add --no-cache \
+        libstdc++ \
+    && rm -rf /var/cache/apk/*
