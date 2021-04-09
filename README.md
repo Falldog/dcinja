@@ -34,8 +34,8 @@ help description
   -s, --src arg        source template file path
   -d, --dest arg       dest template file path
   -e, --defines arg    define string parameters, ex: `-e NAME=FOO -e NUM=1`
-  -j, --json arg       define json content, ex: `-j {"NAME": "FOO"}`
-  -f, --json-file arg  load json content from file
+  -j, --json arg       define json content, ex: `-j {"NAME": "FOO"} -j {"PHONE": "123"}`
+  -f, --json-file arg  load json content from file, ex: `-f p1.json -f p2.json`
   -v, --verbose        verbose mode
 ```
 

@@ -51,8 +51,8 @@ cxxopts::ParseResult parse(int argc, char* argv[]) {
             ("s,src", "source template file path", cxxopts::value<std::string>())
             ("d,dest", "dest template file path", cxxopts::value<std::string>())
             ("e,defines", "define string parameters, ex: `-e NAME=FOO -e NUM=1`", cxxopts::value<std::vector<std::string>>())
-            ("j,json", "define json content, ex: `-j {\"NAME\": \"FOO\"}`", cxxopts::value<std::string>())
-            ("f,json-file", "load json content from file", cxxopts::value<std::string>())
+            ("j,json", "define json content, ex: `-j {\"NAME\": \"FOO\"} -j {\"PHONE\": \"123\"}`", cxxopts::value<std::vector<std::string>>())
+            ("f,json-file", "load json content from file, ex: `-f p1.json -f p2.json`", cxxopts::value<std::vector<std::string>>())
             ("v,verbose", "verbose mode", cxxopts::value<bool>()->default_value("false"))
         ;
 
@@ -87,14 +87,22 @@ int execute(cxxopts::ParseResult& result) {
     // 1. prepare json data & extra defines
     //    priority: defines(-e) >> json(-j) >> json-file(-f)
     if (result.count("json-file")) {
-        std::string json_content;
-        read_source(result["json-file"].as<std::string>(), json_content);
-        data = json::parse(json_content.begin(), json_content.end());
+        auto& json_files = result["json-file"].as<std::vector<std::string>>();
+        for (size_t i=0 ; i<json_files.size() ; ++i) {
+            std::string json_content;
+            read_source(json_files[i], json_content);
+            data.merge_patch(
+                json::parse(json_content.begin(), json_content.end())
+            );
+        }
     }
     if (result.count("json")) {
-        data.merge_patch(
-            json::parse(result["json"].as<std::string>())
-        );
+        auto& jsons = result["json"].as<std::vector<std::string>>();
+        for (size_t i=0 ; i<jsons.size() ; ++i) {
+            data.merge_patch(
+                json::parse(jsons[i])
+            );
+        }
     }
     if (result.count("defines")) {
         auto& defines = result["defines"].as<std::vector<std::string>>();
