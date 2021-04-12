@@ -33,7 +33,7 @@ help description
   -w, --cwd arg        change current working dir
   -s, --src arg        source template file path
   -d, --dest arg       dest template file path
-  -e, --defines arg    define string parameters, ex: `-e NAME=FOO -e NUM=1`
+  -e, --defines arg    define environment parameters, read system env when not assigned value, ex: `-e NAME=FOO -e NUM=1 -e MY_ENV`
   -j, --json arg       define json content, ex: `-j {"NAME": "FOO"} -j {"PHONE": "123"}`
   -f, --json-file arg  load json content from file, ex: `-f p1.json -f p2.json`
   -v, --verbose        verbose mode
@@ -72,11 +72,19 @@ input json from file
 $ dcinja -f param.json -s input.template -d output.template
 ```
 
+define env from command line or system env
+```
+$ dcinja -e name=Foo -s input.template -d output.template
+or
+$ export name=Foo
+$ dcinja -e name -s input.template -d output.template
+```
+
 parameter context priority:
 `-e` >> `-j` >> `-f`
 1. `-f`: json file
 2. `-j`: json content defiend in command line
-3. `-e`: string parameter defeind in command line
+3. `-e`: environment parameter defeind in command line or system
 ```
 $ cat name.json
 >>> {"name": "P1"}

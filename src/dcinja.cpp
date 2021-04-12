@@ -50,7 +50,7 @@ cxxopts::ParseResult parse(int argc, char* argv[]) {
             ("w,cwd", "change current working dir", cxxopts::value<std::string>())
             ("s,src", "source template file path", cxxopts::value<std::string>())
             ("d,dest", "dest template file path", cxxopts::value<std::string>())
-            ("e,defines", "define string parameters, ex: `-e NAME=FOO -e NUM=1`", cxxopts::value<std::vector<std::string>>())
+            ("e,envs", "define environment parameters, read system env when not assigned value, ex: `-e NAME=FOO -e NUM=1 -e MY_ENV`", cxxopts::value<std::vector<std::string>>())
             ("j,json", "define json content, ex: `-j {\"NAME\": \"FOO\"} -j {\"PHONE\": \"123\"}`", cxxopts::value<std::vector<std::string>>())
             ("f,json-file", "load json content from file, ex: `-f p1.json -f p2.json`", cxxopts::value<std::vector<std::string>>())
             ("v,verbose", "verbose mode", cxxopts::value<bool>()->default_value("false"))
@@ -84,8 +84,8 @@ int execute(cxxopts::ParseResult& result) {
         }
     }
 
-    // 1. prepare json data & extra defines
-    //    priority: defines(-e) >> json(-j) >> json-file(-f)
+    // 1. prepare json data & extra envs
+    //    priority: envs(-e) >> json(-j) >> json-file(-f)
     if (result.count("json-file")) {
         auto& json_files = result["json-file"].as<std::vector<std::string>>();
         for (size_t i=0 ; i<json_files.size() ; ++i) {
@@ -104,17 +104,22 @@ int execute(cxxopts::ParseResult& result) {
             );
         }
     }
-    if (result.count("defines")) {
-        auto& defines = result["defines"].as<std::vector<std::string>>();
-        for (size_t i=0 ; i<defines.size() ; ++i) {
-            auto idx = defines[i].find_first_of("=");
+    if (result.count("envs")) {
+        auto& envs = result["envs"].as<std::vector<std::string>>();
+        for (size_t i=0 ; i<envs.size() ; ++i) {
+            auto idx = envs[i].find_first_of("=");
             if (idx == std::string::npos) {
-                std::cout << "error to parse define parameter, `" << defines[i] << "` is missing `=`" << std::endl;
-                exit(0);
+                char * _env = std::getenv(envs[i].c_str());
+                if (_env) {
+                    std::string value = _env;
+                    data[envs[i]] = value;
+                }
             }
-            std::string key = defines[i].substr(0, idx);
-            std::string value = defines[i].substr(idx+1);
-            data[key] = value;
+            else {
+                std::string key = envs[i].substr(0, idx);
+                std::string value = envs[i].substr(idx+1);
+                data[key] = value;
+            }
         }
     }
     if (result.count("verbose")) {
