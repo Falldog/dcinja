@@ -6,7 +6,7 @@ RELEASE_DIR = $(abspath ${DIST_DIR}/release/${VERSION})
 fn-test-dcinja-linux-amd64 = docker run --rm -v `pwd`/${DIST_DIR}:/app $(1) sh -c "echo \"Normal: {{ name }}\" | /app/linux-amd64/dcinja -j '{\"name\": \"$(1)\"}'"
 fn-test-dcinja-alpine = docker run --rm -v `pwd`/${DIST_DIR}:/app $(1) sh -c "echo \"Normal: {{ name }}\" | /app/alpine/dcinja -j '{\"name\": \"$(1)\"}'"
 
-test-docker: build-docker
+test-docker: build
 	# linux-amd64
 	$(call fn-test-dcinja-linux-amd64,ubuntu:20.04)
 	$(call fn-test-dcinja-linux-amd64,ubuntu:18.04)
@@ -28,15 +28,18 @@ test-docker: build-docker
 	$(call fn-test-dcinja-alpine,dcinja/alpine-3.12)
 
 
-pytest: build-docker
+# only focus on alpine environment
+# for quick testing
+pytest: build-alpine
 	docker build -t dcinja:pytest-alpine -f docker/Dockerfile.alpine-test .
 	docker run --rm -it dcinja:pytest-alpine
 
-build-docker:
-	docker build -t dcinja:dev -f docker/Dockerfile.dev .
-	docker build -t dcinja:linux-amd64 -f docker/Dockerfile.linux-amd64 .
-	docker build -t dcinja:alpine -f docker/Dockerfile.alpine .
 
+build: build-linux build-alpine
+
+
+build-linux:
+	docker build -t dcinja:linux-amd64 -f docker/Dockerfile.linux-amd64 .
 	# linux-amd64
 	mkdir -p ${DIST_DIR}/linux-amd64
 	rm -f ${DIST_DIR}/linux-amd64/dcinja
@@ -44,6 +47,9 @@ build-docker:
 	docker cp tmp-build-dcinja:/app/dcinja ${DIST_DIR}/linux-amd64/dcinja
 	docker rm tmp-build-dcinja
 
+
+build-alpine:
+	docker build -t dcinja:alpine -f docker/Dockerfile.alpine .
 	# alpine
 	mkdir -p ${DIST_DIR}/alpine
 	rm -f ${DIST_DIR}/alpine/dcinja
@@ -52,7 +58,11 @@ build-docker:
 	docker rm tmp-build-dcinja
 
 
-build-release: build-docker
+build-dev:
+	docker build -t dcinja:dev -f docker/Dockerfile.dev .
+
+
+release: build
 	mkdir -p ${RELEASE_DIR}/
 	cd ${DIST_DIR}/alpine \
 		&& tar cvzf ${RELEASE_DIR}/dcinja-${VERSION}.alpine.tar.gz dcinja
