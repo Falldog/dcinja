@@ -28,6 +28,10 @@ test-docker: build-docker
 	$(call fn-test-dcinja-alpine,dcinja/alpine-3.12)
 
 
+pytest: build-docker
+	docker build -t dcinja:pytest-alpine -f docker/Dockerfile.alpine-test .
+	docker run --rm -it dcinja:pytest-alpine
+
 build-docker:
 	docker build -t dcinja:dev -f docker/Dockerfile.dev .
 	docker build -t dcinja:linux-amd64 -f docker/Dockerfile.linux-amd64 .

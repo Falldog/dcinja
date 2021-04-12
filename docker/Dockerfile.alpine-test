@@ -1,0 +1,21 @@
+# dcinja
+FROM dcinja:alpine as dcinja
+
+# alpine test environment
+FROM python:3.9.4-alpine3.13
+LABEL maintainer=falldog
+
+RUN apk add --no-cache \
+        libstdc++ \
+    && rm -rf /var/cache/apk/*
+
+RUN mkdir -p /app
+WORKDIR /app
+
+COPY test/requirements.txt /app/
+RUN pip install -r /app/requirements.txt
+COPY test/ /app/
+
+COPY --from=dcinja /app/dcinja /bin/
+
+CMD pytest
