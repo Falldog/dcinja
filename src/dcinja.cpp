@@ -51,6 +51,7 @@ cxxopts::ParseResult parse(int argc, char* argv[]) {
             ("s,src", "source template file path", cxxopts::value<std::string>())
             ("d,dest", "dest template file path", cxxopts::value<std::string>())
             ("e,envs", "define environment parameters, read system env when not assigned value, ex: `-e NAME=FOO -e NUM=1 -e MY_ENV`", cxxopts::value<std::vector<std::string>>())
+            ("force-system-envs", "force to use system envs as final value", cxxopts::value<bool>()->default_value("false"))
             ("j,json", "define json content, ex: `-j {\"NAME\": \"FOO\"} -j {\"PHONE\": \"123\"}`", cxxopts::value<std::vector<std::string>>())
             ("f,json-file", "load json content from file, ex: `-f p1.json -f p2.json`", cxxopts::value<std::vector<std::string>>())
             ("v,verbose", "verbose mode", cxxopts::value<bool>()->default_value("false"))
@@ -119,6 +120,15 @@ int execute(cxxopts::ParseResult& result) {
                 std::string key = envs[i].substr(0, idx);
                 std::string value = envs[i].substr(idx+1);
                 data[key] = value;
+            }
+        }
+    }
+    if (result.count("force-system-envs")) {
+        for (json::iterator it = data.begin(); it != data.end(); ++it) {
+            char * _env = std::getenv(it.key().c_str());
+            if (_env) {
+                std::string value = _env;
+                data[it.key()] = value;
             }
         }
     }

@@ -29,14 +29,15 @@ help description
 ```
   dcinja [OPTION...]
 
-  -h, --help           print help
-  -w, --cwd arg        change current working dir
-  -s, --src arg        source template file path
-  -d, --dest arg       dest template file path
-  -e, --defines arg    define environment parameters, read system env when not assigned value, ex: `-e NAME=FOO -e NUM=1 -e MY_ENV`
-  -j, --json arg       define json content, ex: `-j {"NAME": "FOO"} -j {"PHONE": "123"}`
-  -f, --json-file arg  load json content from file, ex: `-f p1.json -f p2.json`
-  -v, --verbose        verbose mode
+  -h, --help               print help
+  -w, --cwd arg            change current working dir
+  -s, --src arg            source template file path
+  -d, --dest arg           dest template file path
+  -e, --defines arg        define environment parameters, read system env when not assigned value, ex: `-e NAME=FOO -e NUM=1 -e MY_ENV`
+      --force-system-envs  force to use system envs as final value
+  -j, --json arg           define json content, ex: `-j {"NAME": "FOO"} -j {"PHONE": "123"}`
+  -f, --json-file arg      load json content from file, ex: `-f p1.json -f p2.json`
+  -v, --verbose            verbose mode
 ```
 
 ## Template document
@@ -85,6 +86,7 @@ parameter context priority:
 1. `-f`: json file
 2. `-j`: json content defiend in command line
 3. `-e`: environment parameter defeind in command line or system
+4. `--force-system-envs`: force to use system envs as final value
 ```
 $ cat name.json
 >>> {"name": "P1"}
