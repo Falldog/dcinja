@@ -104,8 +104,8 @@ FROM ubuntu:20.04 as dcinja-downloader
 RUN apt-get update && apt-get install -y wget
 RUN mkdir -p /app \
         && cd /app \
-        && wget https://github.com/Falldog/dcinja/releases/download/v1.1/dcinja-1.1.linux-amd64.tar.gz \
-        && tar xvzf dcinja-1.1.linux-amd64.tar.gz
+        && wget https://github.com/Falldog/dcinja/releases/download/v1.3/dcinja-1.3.linux-amd64.tar.gz \
+        && tar xvzf dcinja-1.3.linux-amd64.tar.gz
 
 FROM ubuntu:20.04
 COPY --from=dcinja-downloader /app/dcinja /bin/
