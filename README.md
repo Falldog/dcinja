@@ -97,17 +97,35 @@ $ echo "Name: {{ name }}" | dcinja -j '{"name": "P2"}' -e name=P3 -f name.json
 ```
 
 ## Integration from release build
-Dockerfile example, using multi-stage to download `dcinja` and copy to your final docker image /bin/ as command. The download path should follow Github release page to get latest release version.
+Dockerfile example, download `dcinja` into docker image /bin/ as command. The download path should follow Github release page to get latest release version.
+
+**ubuntu**
 
 ```
-FROM ubuntu:20.04 as dcinja-downloader
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y wget
+RUN cd /tmp \
+        && wget https://github.com/Falldog/dcinja/releases/download/v1.3/dcinja-1.3.linux-amd64.tar.gz -O dcinja.tar.gz \
+        && tar xzf dcinja.tar.gz \
+        && cp dcinja /bin/
+
+# testing, check dcinja working normal
+RUN dcinja -h \
+        && echo "Normal: {{ name }}" | dcinja -j '{"name": "TEST"}'
+
+# ...
+```
+
+**ubuntu (multi-stage)**
+```
+FROM ubuntu:latest as dcinja-downloader
 RUN apt-get update && apt-get install -y wget
 RUN mkdir -p /app \
         && cd /app \
-        && wget https://github.com/Falldog/dcinja/releases/download/v1.3/dcinja-1.3.linux-amd64.tar.gz \
-        && tar xvzf dcinja-1.3.linux-amd64.tar.gz
+        && wget https://github.com/Falldog/dcinja/releases/download/v1.3/dcinja-1.3.linux-amd64.tar.gz -O dcinja.tar.gz \
+        && tar xzf dcinja.tar.gz
 
-FROM ubuntu:20.04
+FROM ubuntu:latest
 COPY --from=dcinja-downloader /app/dcinja /bin/
 
 # testing, check dcinja working normal
@@ -117,39 +135,23 @@ RUN dcinja -h \
 # ...
 ```
 
-## Integration from source code
-Dockerfile example, using multi-stage to build `dcinja` and copy to your final docker image /bin/ as command
+**alpine**
 
 ```
-FROM ubuntu as dcinja-builder
-LABEL maintainer=falldog
+FROM alpine:latest
+RUN apk --no-cache add wget libstdc++
+RUN cd /tmp \
+        && wget https://github.com/Falldog/dcinja/releases/download/v1.3/dcinja-1.3.alpine.tar.gz -O dcinja.tar.gz \
+        && tar xzf dcinja.tar.gz \
+        && cp dcinja /bin/
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        \
-        # build
-        g++ \
-        make \
-        \
-        # clone source code
-        git \
-        ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /code \
-    && git clone https://github.com/Falldog/dcinja.git /code
-
-WORKDIR /code
-RUN make
-
-
-FROM ubuntu
-COPY --from=dcinja-builder /code/dist/dcinja /bin/
+# testing, check dcinja working normal
+RUN dcinja -h \
+        && echo "Normal: {{ name }}" | dcinja -j '{"name": "TEST"}'
 # ...
 ```
 
-
-## Defect
+## Note
 The binary size build by c++ compiler, it's platform sensitive, the minimum c++ compiler support is C++11. It will dependent with `libstdc++.so`. 
 
 ldd result at ubuntu 18.04
