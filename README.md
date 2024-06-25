@@ -1,19 +1,41 @@
 # dcinja
-------------
-The smallest binary size of template engine, born for docker image
 
-Generate template file by powerful template engine `inja`. This project wrap it in 
-docker command line binary. 
+`dcinja` is the smallest binary size template engine, designed specifically for Docker images.
 
-For building docker image, smaller execution binary size should be better.
-The project `dcinja` compile by c++ compiler, the binary size is only **500KB ~ 600KB**.
-It's very suitable to use `dcinja` in container to dynamic generate configuration 
-file at run-time.
+<!-- TOC -->
+* [Dependency library](#dependency-library)
+* [Binary size](#binary-size)
+* [Command line usage](#command-line-usage)
+* [Template document](#template-document)
+* [Example](#example)
+* [Integration from release build](#integration-from-release-build)
+* [Note](#note)
+<!-- TOC -->
+
+
+## Overview
+`dcinja` leverages the powerful inja template engine, encapsulated within a Docker command-line binary. 
+It offers a dynamic configuration generator for Docker containers, making it an excellent alternative 
+to `envsubst`.
+
+Unlike `envsubst`, which has limitations in style and usage, `dcinja` provides a more robust solution 
+for generating various types of configurations. 
+
+## Why dcinja?
+For building Docker images, a smaller execution binary size is often preferable. Compiled with a C++ 
+compiler, the dcinja binary is only 500KB ~ 600KB, making it highly suitable for dynamically generating 
+configuration files at runtime within containers.
+
 
 ## Dependency library
+`dcinja` is built upon robust, well-maintained C++ libraries, ensuring stability and performance:
 * [inja](https://github.com/pantor/inja)
 * [cxxopts](https://github.com/jarro2783/cxxopts)
 * [nlohmann/json](https://github.com/nlohmann/json)
+
+All dependencies are statically linked into the dcinja binary, meaning you do not need to install 
+any of these libraries separately. This makes dcinja easy to use and integrate into your Docker images 
+without additional setup.
 
 ## Binary size
 arch | os      | dcinja size  | embedded libstdc++ 
@@ -41,7 +63,7 @@ help description
 ```
 
 ## Template document
-[inja - document tutorial](https://github.com/pantor/inja#tutorial), It's compatiable with `Jinja2`.
+[inja - document tutorial](https://github.com/pantor/inja#tutorial), It's compatible with [Jinja2](https://palletsprojects.com/p/jinja/).
 
 * variables `{{ ... }}`
 * statements `{% ... %}`
@@ -96,54 +118,36 @@ $ echo "Name: {{ name }}" | dcinja -j '{"name": "P2"}' -e name=P3 -f name.json
 >>> Name: P3
 ```
 
+## Real docker example
+* nginx, dynamic generate nginx.conf and index.html by entrypoint. [Example Link](example/nginx__dynamic__entrypoint/README.md).
+* nginx, dynamic generate nginx.conf and header in Dockerfile. [Example Link](example/nginx__dynamic__in_docker/README.md).
+* nginx, generate nginx.conf and header in Dockerfile at build time. [Example Link](example/nginx__static__in_docker/README.md).
+
+
 ## Integration from release build
-Dockerfile example, download `dcinja` into docker image /bin/ as command. The download path should follow Github release page to get latest release version.
+Dockerfile example, download `dcinja` into docker image /bin/ as command. Copy the `dcinja` executable file via 
+docker `COPY --from` command.
 
 **ubuntu**
 
 ```
 FROM ubuntu:latest
-RUN apt-get update && apt-get install -y wget
-RUN cd /tmp \
-        && wget https://github.com/Falldog/dcinja/releases/download/v1.3/dcinja-1.3.linux-amd64.tar.gz -O dcinja.tar.gz \
-        && tar xzf dcinja.tar.gz \
-        && cp dcinja /bin/
+COPY --from=falldog/dcinja:latest /app/dcinja /bin
 
 # testing, check dcinja working normal
 RUN dcinja -h \
         && echo "Normal: {{ name }}" | dcinja -j '{"name": "TEST"}'
-
-# ...
-```
-
-**ubuntu (multi-stage)**
-```
-FROM ubuntu:latest as dcinja-downloader
-RUN apt-get update && apt-get install -y wget
-RUN mkdir -p /app \
-        && cd /app \
-        && wget https://github.com/Falldog/dcinja/releases/download/v1.3/dcinja-1.3.linux-amd64.tar.gz -O dcinja.tar.gz \
-        && tar xzf dcinja.tar.gz
-
-FROM ubuntu:latest
-COPY --from=dcinja-downloader /app/dcinja /bin/
-
-# testing, check dcinja working normal
-RUN dcinja -h \
-        && echo "Normal: {{ name }}" | dcinja -j '{"name": "TEST"}'
-
 # ...
 ```
 
 **alpine**
 
+Need to install `libstdc++` package.
+
 ```
 FROM alpine:latest
-RUN apk --no-cache add wget libstdc++
-RUN cd /tmp \
-        && wget https://github.com/Falldog/dcinja/releases/download/v1.3/dcinja-1.3.alpine.tar.gz -O dcinja.tar.gz \
-        && tar xzf dcinja.tar.gz \
-        && cp dcinja /bin/
+RUN apk --no-cache add libstdc++
+COPY --from=falldog/dcinja:latest-alpine /app/dcinja /bin
 
 # testing, check dcinja working normal
 RUN dcinja -h \
@@ -151,7 +155,7 @@ RUN dcinja -h \
 # ...
 ```
 
-## Note
+## Troubleshooting
 The binary size build by c++ compiler, it's platform sensitive, the minimum c++ compiler support is C++11. It will dependent with `libstdc++.so`. 
 
 ldd result at ubuntu 18.04

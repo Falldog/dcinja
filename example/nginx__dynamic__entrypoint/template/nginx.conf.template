@@ -1,0 +1,11 @@
+server {
+    listen       8080;
+    server_name  localhost;
+
+    location / {
+        root   /code;
+        index  index.html;
+    }
+
+    add_header X-DCINJA "its dcinja header info! My name is `{{ NAME }}`";
+}
