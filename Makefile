@@ -68,3 +68,13 @@ release: build
 		&& tar cvzf ${RELEASE_DIR}/dcinja-${VERSION}.alpine.tar.gz dcinja
 	cd ${DIST_DIR}/linux-amd64 \
 		&& tar cvzf ${RELEASE_DIR}/dcinja-${VERSION}.linux-amd64.tar.gz dcinja
+
+publish-dockerhub: build
+	docker image tag dcinja:linux-amd64 falldog/dcinja:latest
+	docker image tag dcinja:linux-amd64 falldog/dcinja:${VERSION}
+	docker push falldog/dcinja:latest
+	docker push falldog/dcinja:${VERSION}
+	docker image tag dcinja:alpine falldog/dcinja:latest-alpine
+	docker image tag dcinja:alpine falldog/dcinja:${VERSION}-alpine
+	docker push falldog/dcinja:latest-alpine
+	docker push falldog/dcinja:${VERSION}-alpine
