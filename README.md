@@ -3,13 +3,16 @@
 `dcinja` is the smallest binary size template engine, designed specifically for Docker images.
 
 <!-- TOC -->
+* [Overview](#overview)
+* [Why dcinja?](#why-dcinja)
 * [Dependency library](#dependency-library)
 * [Binary size](#binary-size)
 * [Command line usage](#command-line-usage)
 * [Template document](#template-document)
 * [Example](#example)
+* [Real docker example](#real-docker-example)
 * [Integration from release build](#integration-from-release-build)
-* [Note](#note)
+* [Troubleshooting](#troubleshooting)
 <!-- TOC -->
 
 
