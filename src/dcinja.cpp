@@ -54,6 +54,9 @@ cxxopts::ParseResult parse(int argc, char* argv[]) {
             ("force-system-envs", "force to use system envs as final value", cxxopts::value<bool>()->default_value("false"))
             ("j,json", "define json content, ex: `-j {\"NAME\": \"FOO\"} -j {\"PHONE\": \"123\"}`", cxxopts::value<std::vector<std::string>>())
             ("f,json-file", "load json content from file, ex: `-f p1.json -f p2.json`", cxxopts::value<std::vector<std::string>>())
+            ("x,expression", "expression delimiters (e.g. '{{ }}')", cxxopts::value<std::string>()->default_value("{{ }}"))
+            ("t,statement", "statement delimiters (e.g. '{% %}')", cxxopts::value<std::string>()->default_value("{% %}"))
+            ("c,comment", "comment delimiters (e.g. '{# #}')", cxxopts::value<std::string>()->default_value("{# #}"))
             ("v,verbose", "verbose mode", cxxopts::value<bool>()->default_value("false"))
         ;
 
@@ -145,15 +148,33 @@ int execute(cxxopts::ParseResult& result) {
         read_source("", content);
     }
 
+    auto parse_delims = [](const std::string& s) -> std::pair<std::string, std::string> {
+        auto pos = s.find(' ');
+        if (pos == std::string::npos)
+            return std::make_pair(s, s);
+        return std::make_pair(s.substr(0, pos), s.substr(pos + 1));
+    };
+
+    std::pair<std::string, std::string> x_delims = parse_delims(result["expression"].as<std::string>());
+    std::pair<std::string, std::string> t_delims = parse_delims(result["statement"].as<std::string>());
+    std::pair<std::string, std::string> c_delims = parse_delims(result["comment"].as<std::string>());
+
+    inja::Environment env;
+    env.set_expression(x_delims.first, x_delims.second);
+    env.set_statement(t_delims.first, t_delims.second);
+    env.set_comment(c_delims.first, c_delims.second);
+
+    inja::Template tmpl = env.parse(content);
+
     // 3. render output
     if (result.count("dest")) {
         auto dest = result["dest"].as<std::string>();
         std::ofstream ofs;
         ofs.open(dest, std::ofstream::out | std::ofstream::trunc);
-        render_to(ofs, content, data);
+        env.render_to(ofs, tmpl, data);
         ofs.close();
     } else {
-        render_to(std::cout, content, data);
+        env.render_to(std::cout, tmpl, data);
     }
     return 0;
 }
