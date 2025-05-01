@@ -11,7 +11,10 @@ def test_print_help():
 
 def test_cmd_assign_json():
     cmd = """
-        echo "TEST: {{ name }}" | dcinja -j '{"name": "Foo"}'
+        echo "TEST: {{ name }}" \
+        | \
+        dcinja \
+        -j '{"name": "Foo"}'
     """
     assert exec_cmd(cmd) == "TEST: Foo"
 

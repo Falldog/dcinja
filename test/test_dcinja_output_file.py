@@ -5,7 +5,10 @@ def test_cmd_write_output_to_file():
     output_path = create_temp_file_path()
     input_path = create_temp_template_file("TEST: {{ name }}")
     cmd = """
-        dcinja -s %s -d %s -e name
+        dcinja \
+        -s %s \
+        -d %s \
+        -e name
     """ % (input_path, output_path)
     env = {
         'name': 'Foo',
