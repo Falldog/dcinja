@@ -60,8 +60,11 @@ help description
   -d, --dest arg           dest template file path
   -e, --defines arg        define environment parameters, read system env when not assigned value, ex: `-e NAME=FOO -e NUM=1 -e MY_ENV`
       --force-system-envs  force to use system envs as final value
-  -j, --json arg           define json content, ex: `-j {"NAME": "FOO"} -j {"PHONE": "123"}`
-  -f, --json-file arg      load json content from file, ex: `-f p1.json -f p2.json`
+  -j, --json arg           define json content (e.g.: `-j {"NAME": "FOO"} -j {"PHONE": "123"}`)
+  -f, --json-file arg      load json content from file (e.g. `-f p1.json -f p2.json`)
+  -x, --expression         expression delimiters (e.g. "{{ }}")
+  -t, --statement          statement delimiters (e.g. "{% %}")
+  -c, --comment            comment delimiters (e.g. "{# #}")
   -v, --verbose            verbose mode
 ```
 
