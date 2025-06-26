@@ -1,4 +1,4 @@
-FROM debian:buster AS linux-amd64-builder
+FROM debian:buster AS linux-builder
 LABEL maintainer=falldog
 
 RUN apt-get update \
@@ -14,6 +14,6 @@ RUN make -f Makefile.base
 
 
 FROM debian:buster
-COPY --from=linux-amd64-builder /code/dist/dcinja /app/
+COPY --from=linux-builder /code/dist/dcinja /app/
 WORKDIR /app
 ENTRYPOINT [ "/app/dcinja" ]
