@@ -1,4 +1,4 @@
-FROM debian:buster as linux-amd64-builder
+FROM debian:buster AS linux-amd64-builder
 LABEL maintainer=falldog
 
 RUN apt-get update \
