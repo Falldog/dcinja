@@ -1,6 +1,6 @@
 include Makefile.base
 
-VERSION = 1.4
+VERSION = 1.4.1
 RELEASE_DIR = $(abspath ${DIST_DIR}/release/${VERSION})
 
 fn-test-dcinja-linux-amd64 = docker run --rm -v `pwd`/${DIST_DIR}:/app $(1) sh -c "echo \"Normal: {{ name }}\" | /app/linux-amd64/dcinja -j '{\"name\": \"$(1)\"}'"
