@@ -1,5 +1,5 @@
 # dcinja
-FROM dcinja:alpine as dcinja
+FROM dcinja:alpine AS dcinja
 
 # alpine test environment
 FROM python:3.9.4-alpine3.13
